@@ -18,7 +18,7 @@ public class App
     public static void main( String[] args ) throws IOException, NoHeadException, GitAPIException
     {
 
-        File gitDir = new File("C:\\Users\\AdminEtu\\Documents\\github_gitlab_sync\\.git");
+        File gitDir = new File("/home/nicolas/Dev/apet/.git");
 
         RepositoryBuilder builder = new RepositoryBuilder();
         Repository repository;
@@ -35,8 +35,7 @@ public class App
         while (i.hasNext()) {
             commit = walk.parseCommit( i.next() );
             System.out.println( commit.getFullMessage() );
-
-        }
+       }
         
         
     }
