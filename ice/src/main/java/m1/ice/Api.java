@@ -1,33 +1,32 @@
 package m1.ice;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.NoHeadException;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.RepositoryBuilder;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import net.lingala.zip4j.ZipFile;
 
 @RestController
 public class Api {
@@ -46,33 +45,63 @@ public class Api {
 		
 	}
 	
-	
+	private ArrayList<String> viewer () throws IOException, NoHeadException, GitAPIException
+	{
+		File gitDir = new File("C:\\Users\\AdminEtu\\Documents\\.git");
+
+        RepositoryBuilder builder = new RepositoryBuilder();
+        Repository repository;
+        repository = builder.setGitDir(gitDir).readEnvironment()
+                .findGitDir().build();
+
+        Git git = new Git(repository);
+        RevWalk walk = new RevWalk(repository);
+        RevCommit commit = null;
+
+        Iterable<RevCommit> logs = git.log().call();
+        Iterator<RevCommit> i = logs.iterator();
+        
+        ArrayList<String> com = new ArrayList<String>();
+        
+        while (i.hasNext()) {
+            commit = walk.parseCommit( i.next() );
+            com.add(commit.getFullMessage());
+            System.out.println( commit.getFullMessage() );
+        }
+		return com;
+		
+	}
+	@CrossOrigin(origins = "*") 
 	 @PostMapping("/upload") // //new annotation since 4.3
-	    public String singleFileUpload(@RequestParam("file") MultipartFile file,
-	                                   RedirectAttributes redirectAttributes) {
+	    public ArrayList<String> singleFileUpload(@RequestParam("file") MultipartFile file,
+	                                   RedirectAttributes redirectAttributes) throws NoHeadException, IOException, GitAPIException  {
 
 	        if (file.isEmpty()) {
 	            redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
-	            return "redirect:uploadStatus";
 	        }
 
 	        try {
 
 	            // Get the file and save it somewhere
 	            byte[] bytes = file.getBytes();
-	        	System.out.println("okokok");
 
-	            Path path = Paths.get("/Users/mathieu/Desktop/M1ProjectStock/" + file.getOriginalFilename());
+	            Path path = Paths.get("C:\\Users\\AdminEtu\\Documents\\Eclipse\\Save.zip");
 	            Files.write(path, bytes);
 
 	            redirectAttributes.addFlashAttribute("message",
 	                    "You successfully uploaded '" + file.getOriginalFilename() + "'");
+	            
+	            ZipFile zipFile = new ZipFile("C:/Users/AdminEtu/Documents/Eclipse/Save.zip");
+	            zipFile.extractAll("C:/Users/AdminEtu/Documents/Eclipse/");
+	            	            
 
 	        } catch (IOException e) {
 	            e.printStackTrace();
 	        }
+	        
+	       
 
-	        return "redirect:/uploadStatus";
+	        return  viewer();
 	    }
 	
 	

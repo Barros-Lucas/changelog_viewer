@@ -31,5 +31,22 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-web</artifactId>
 	</dependency>
+	<dependency>
+	    <groupId>net.lingala.zip4j</groupId>
+	    <artifactId>zip4j</artifactId>
+	    <version>2.2.7</version>
+	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit -->
+	<dependency>
+	    <groupId>org.eclipse.jgit</groupId>
+	    <artifactId>org.eclipse.jgit</artifactId>
+	    <version>5.6.0.201912101111-r</version>
+	</dependency>
+
+	<dependency>
+       <groupId>org.slf4j</groupId>
+       <artifactId>slf4j-api</artifactId>
+       <version>1.7.5</version>
+   </dependency>
   </dependencies>
 </project>
