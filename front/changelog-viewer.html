@@ -22,20 +22,27 @@
         <div class="container login-container">
             <div class="row">
                 <div class="col-md-6 login-form-1">
-                    <h3><span>&#x26B2; </span>Directory<span> &#x26B2;</span></h3>
+                    <h3><span>&#x26B2; </span>Directory<span> &#x26B2;</span></h3><br>
                     <p>Directory: <input id="directory" type="file" webkitdirectory mozdirectory /></p>
                     <div class="form-group">
-                        <button onclick="valider()" class="btnSubmit">Valider</button>
+                        <button onclick="valider()" class="btnSubmit">Submit</button>
                     </div>
                 </div>
                 <div class="col-md-6 login-form-2">
-                    <h3><span>&#x26B2; </span>Url<span> &#x26B2;</span></h3>
+                    <h3><span>&#x26B2; </span>Url<span> &#x26B2;</span></h3><br>
                     <p><input type="text" class="form-control" placeholder="Your URL" value="" /></p>
+                    <div class="form-group">
+                        <button onclick="valider()" class="btnSubmit">Submit</button>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="container" id="log">
-
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6" id="log">
+                </div>
+                <div class="col-md-6" id="precision"></div>
+            </div>
         </div>
 <script>
 
@@ -45,9 +52,9 @@
  
     function valider ()
     {
-        console.log("Starting.....");
+        $("#log").html("");
+        $("#precision").html("");
         var zip = new JSZip();
-
         var iptEls = document.querySelectorAll('#directory');
         [].forEach.call(iptEls, function(iptEl) {
             console.log(iptEl.files);
@@ -85,14 +92,48 @@
                     console.log("SUCCESS : ", data);
                     $("#btnSubmit").prop("disabled", false);
                     var str = "";
-                    var color = ["red", "green", "blue"];
+                    var color = ["#f04f32", "#88b950", "#1fb3b2"];
+                    var tabAuthor = new Set();
                     for (elt in data)
                     {
-                        console.log(data[elt]);
-                        str = "<br><span class='icon' style='color:"+color[getRandomInt(3)]+"''>&#x21e9;</span><h3>"+data[elt]+"</h3><br><div></div>"+str
+                        var id = data[elt]["id"];
+                        var author = data[elt]["author"]["name"];
+                        var date = data[elt]["author"]["when"];
+                        var message = data[elt]["message"];
+            
+                        tabAuthor.add(author);
+                        str += '\
+                        <div class="card text-white mb-3" style="max-width: auto; background-color : '+color[getRandomInt(3)]+' !important">\
+                            <div class="card-header"><small>'+message+'</small></div>\
+                                <div class="card-body"><h5 class="card-title">By '+author+'</h5>\
+                                <p class="card-text"><small>On '+new Date(date)+'</small></p>\
+                            </div>\
+                        </div>';
                     }
 
-                    jQuery($("#log")).append("<div class='jumbotron login-container text-center'><h2>Log viewer<h2><hr>"+str+"</div>");
+                    jQuery($("#log")).append("<div class='jumbotron'><h2>Log viewer<h2><hr>\
+                    <div class='row'><div class='col-md-1 line' ></div>\
+                    <div class='col-md-11'>"+str+"</div></div></div>");
+
+                    str ="";
+                    console.log(tabAuthor);
+
+                    for (elt of tabAuthor)
+                    {
+                        str = "&#8627; "+elt;
+                    }
+
+                    str = '<div class="card text-white mb-3" style="max-width: auto; background-color : #1fb3b2 !important">\
+                            <div class="card-header"><small>Contributors</small></div>\
+                                <div class="card-body"><h5 class="card-title">'+str+'</h5>\
+                            </div></div>\
+                            <div class="card text-white mb-3" style="max-width: auto; background-color : #88b950 !important">\
+                            <div class="card-header"><small>Commits</small></div>\
+                                <div class="card-body"><h5 class="card-title">'+data.length+'</h5>\
+                            </div>';
+
+                    jQuery($("#precision")).append("<div class='jumbotron'><h2>Informations<h2><hr>\
+                    <div class='col-md-11'>"+str+"</div></div>");
 
                 },
                 error: function (e) {

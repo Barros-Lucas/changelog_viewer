@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Iterator;
 
 import org.eclipse.jgit.api.Git;
@@ -45,9 +46,9 @@ public class Api {
 		
 	}
 	
-	private ArrayList<String> viewer () throws IOException, NoHeadException, GitAPIException
+	private ArrayList<Hashtable> viewer () throws IOException, NoHeadException, GitAPIException
 	{
-		File gitDir = new File("C:\\Users\\AdminEtu\\Documents\\.git");
+		File gitDir = new File("C:\\Users\\AdminEtu\\Documents\\Eclipse\\.git");
 
         RepositoryBuilder builder = new RepositoryBuilder();
         Repository repository;
@@ -61,11 +62,15 @@ public class Api {
         Iterable<RevCommit> logs = git.log().call();
         Iterator<RevCommit> i = logs.iterator();
         
-        ArrayList<String> com = new ArrayList<String>();
+        ArrayList<Hashtable> com = new ArrayList<Hashtable>();
         
         while (i.hasNext()) {
             commit = walk.parseCommit( i.next() );
-            com.add(commit.getFullMessage());
+            Hashtable content = new Hashtable();
+            content.put("id", commit.getName());
+            content.put("author", commit.getCommitterIdent());
+            content.put("message", commit.getFullMessage());
+            com.add(content);
             System.out.println( commit.getFullMessage() );
         }
 		return com;
@@ -73,7 +78,7 @@ public class Api {
 	}
 	@CrossOrigin(origins = "*") 
 	 @PostMapping("/upload") // //new annotation since 4.3
-	    public ArrayList<String> singleFileUpload(@RequestParam("file") MultipartFile file,
+	    public ArrayList<Hashtable> singleFileUpload(@RequestParam("file") MultipartFile file,
 	                                   RedirectAttributes redirectAttributes) throws NoHeadException, IOException, GitAPIException  {
 
 	        if (file.isEmpty()) {
@@ -99,8 +104,6 @@ public class Api {
 	            e.printStackTrace();
 	        }
 	        
-	       
-
 	        return  viewer();
 	    }
 	
