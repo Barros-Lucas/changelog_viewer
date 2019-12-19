@@ -21,6 +21,10 @@ html {
     border-right : 6px solid #88b950;
 }
 
+.icon {
+    font-size: 75px;
+}
+
 span{
     font-display: bold;
 }

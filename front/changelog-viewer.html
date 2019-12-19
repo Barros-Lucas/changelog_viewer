@@ -1,59 +1,126 @@
 <!DOCTYPE html>
 <html>
-        <head>
-            <link rel="stylesheet" href="style.css">
-            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-            <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-            <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-            <script src="Stuk-jszip-3109282/dist/jszip.js"></script>
-            <!------ Include the above in your HEAD tag ---------->
-        </head>
-        <body>
-            <style>
-                .icon {
-                    font-size: 75px;
-                }
-            </style>
-            <!-- As a heading -->
-        <nav class="navbar navbar-light bg-light">
-            <span class="navbar-brand mb-0 h1">GIT - Log Viewer</span>
-        </nav>
-        <div class="container login-container">
-            <div class="row">
-                <div class="col-md-6 login-form-1">
-                    <h3><span>&#x26B2; </span>Directory<span> &#x26B2;</span></h3><br>
-                    <p>Directory: <input id="directory" type="file" webkitdirectory mozdirectory /></p>
-                    <div class="form-group">
-                        <button onclick="valider()" class="btnSubmit">Submit</button>
-                    </div>
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+        <script src="Stuk-jszip-3109282/dist/jszip.js"></script>
+    </head>
+    <body>
+    <nav class="navbar navbar-light bg-light">
+        <span class="navbar-brand mb-0 h1">GIT - Log Viewer</span>
+    </nav>
+    <div class="container login-container">
+        <div class="row">
+            <div class="col-md-6 login-form-1">
+                <h3><span>&#x26B2; </span>Directory<span> &#x26B2;</span></h3><br>
+                <p>Directory : <input id="directory" type="file" webkitdirectory mozdirectory /></p>
+                <div class="form-group">
+                    <button onclick="directory()" class="btnSubmit">Submit</button>
                 </div>
-                <div class="col-md-6 login-form-2">
-                    <h3><span>&#x26B2; </span>Url<span> &#x26B2;</span></h3><br>
-                    <p><input type="text" class="form-control" placeholder="Your URL" value="" /></p>
-                    <div class="form-group">
-                        <button onclick="valider()" class="btnSubmit">Submit</button>
-                    </div>
+            </div>
+            <div class="col-md-6 login-form-2">
+                <h3><span>&#x26B2; </span>Url<span> &#x26B2;</span></h3><br>
+                <p><input type="text" id="url" class="form-control" placeholder="Your URL" value="" /></p>
+                <div class="form-group">
+                    <button onclick="fromUrl()" class="btnSubmit">Submit</button>
                 </div>
             </div>
         </div>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6" id="log">
-                </div>
-                <div class="col-md-6" id="precision"></div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6" id="log">
             </div>
+            <div class="col-md-6" id="precision"></div>
         </div>
-<script>
-
-    function getRandomInt(max) {
+    </div>
+    <script>
+    
+    //Create random Int
+    function getRandomInt(max) 
+    {
         return Math.floor(Math.random() * Math.floor(max));
     }
- 
-    function valider ()
+
+    //Create log viewer from an URL. Use an API
+    function fromUrl ()
     {
-        $("#log").html("");
-        $("#precision").html("");
+        initialize();
+        //Create request
+        var requete = $("#url").val();
+        var url = "http://localhost:8081/fromUrl?url="+requete;
+        //Table wich contains color. It's used to random color
+        var color = ["#f04f32", "#88b950", "#1fb3b2"];
+        str="";
+        //GET request
+        $.get(url, function(data, status){
+            //Unique values
+            var tabAuthor = new Set();
+            for (elt in data)
+            {
+                //Memorize values
+                var author = data[elt]["author"];
+                var date = data[elt]["date"];
+                var message = data[elt]["message"];
+                //Adding in str
+                str += log_viewer (color[getRandomInt(3)], message, author, new Date(date))
+                //Adding in table
+                tabAuthor.add(author);
+            }
+            //Displaying
+            display_viewer(str);
+            //Author's list
+            for (elt of tabAuthor)
+            {
+                str = "&#8627; "+elt+"<br>";
+            }
+            //Displaying informations
+            display_informations(str, data);
+        }) 
+    }
+
+    //Display log viewer
+    function display_viewer (str)
+    {
+        jQuery($("#log")).append("<div class='jumbotron'><h2>Log viewer<h2><hr>\
+            <div class='row'><div class='col-md-1 line' ></div>\
+            <div class='col-md-11'>"+str+"</div></div></div>");
+    }
+
+    //Display one commit
+    function log_viewer (color, message, author, date)
+    {
+        return '\
+        <div class="card text-white mb-3" style="max-width: auto; background-color : '+color+' !important">\
+            <div class="card-header"><small>'+message+'</small></div>\
+                <div class="card-body"><h5 class="card-title">By '+author+'</h5>\
+                <p class="card-text"><small>On '+date+'</small></p>\
+            </div>\
+        </div>';
+    }
+
+    //Display infirmations
+    function display_informations (str, data)
+    {
+        str = '<div class="card text-white mb-3" style="max-width: auto; background-color : #1fb3b2 !important">\
+                <div class="card-header"><small>Contributors</small></div>\
+                    <div class="card-body"><h5 class="card-title">'+str+'</h5>\
+                </div></div>\
+                <div class="card text-white mb-3" style="max-width: auto; background-color : #88b950 !important">\
+                <div class="card-header"><small>Commits</small></div>\
+                    <div class="card-body"><h5 class="card-title">'+data.length+'</h5>\
+                </div>';
+
+        jQuery($("#precision")).append("<div class='jumbotron'><h2>Informations<h2><hr>\
+        <div class='col-md-11'>"+str+"</div></div>");
+    }
+
+    //Create a zip from an existing folder
+    function getZip ()
+    {
         var zip = new JSZip();
         var iptEls = document.querySelectorAll('#directory');
         [].forEach.call(iptEls, function(iptEl) {
@@ -65,133 +132,77 @@
             })
             zip.folder(".git");
         })
+        return zip;
+    }
 
+    //Initialize displaying
+    function initialize ()
+    {
+        $("#log").html("");
+        $("#precision").html("");
+    }
+ 
+    //Create log viewer from a directory
+    function directory ()
+    {
+        initialize();
+        zip = getZip();
         zip.generateAsync({type:"blob"})
         .then(function(content) {
-            // see FileSaver.js
-            console.log('Compression complete!');
-            // Create file object to upload
+            //Create new File
             var fileObj = new File([content], ".zip");
-            console.log('File object created:', fileObj);
+            //Initialize a form data
             var fd = new FormData();
             fd.append('file', fileObj);
-
+            //POST request
             $.ajax({
                 type: "POST",
                 enctype: 'multipart/form-data',
                 url: 'http://localhost:8081/upload',
                 data: fd,
-                //http://api.jquery.com/jQuery.ajax/
-                //https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects
                 processData: false, //prevent jQuery from automatically transforming the data into a query string
                 contentType: false,
                 cache: false,
                 timeout: 600000,
                 success: function (data) {
-
-                    console.log("SUCCESS : ", data);
                     $("#btnSubmit").prop("disabled", false);
                     var str = "";
+                    //Table wich contains color. It's used to random color
                     var color = ["#f04f32", "#88b950", "#1fb3b2"];
+                    //Unique value
                     var tabAuthor = new Set();
                     for (elt in data)
                     {
+                        //Memorize values
                         var id = data[elt]["id"];
                         var author = data[elt]["author"]["name"];
                         var date = data[elt]["author"]["when"];
                         var message = data[elt]["message"];
-            
+                        //Adding in str
+                        str += log_viewer (color[getRandomInt(3)], message, author, new Date(date))
+                        //Adding in table
                         tabAuthor.add(author);
-                        str += '\
-                        <div class="card text-white mb-3" style="max-width: auto; background-color : '+color[getRandomInt(3)]+' !important">\
-                            <div class="card-header"><small>'+message+'</small></div>\
-                                <div class="card-body"><h5 class="card-title">By '+author+'</h5>\
-                                <p class="card-text"><small>On '+new Date(date)+'</small></p>\
-                            </div>\
-                        </div>';
                     }
-
-                    jQuery($("#log")).append("<div class='jumbotron'><h2>Log viewer<h2><hr>\
-                    <div class='row'><div class='col-md-1 line' ></div>\
-                    <div class='col-md-11'>"+str+"</div></div></div>");
-
-                    str ="";
-                    console.log(tabAuthor);
-
+                    //Displaying
+                    display_viewer(str);
+                    //Author's list
                     for (elt of tabAuthor)
                     {
-                        str = "&#8627; "+elt;
+                        str = "&#8627; "+elt+"<br>";
                     }
-
-                    str = '<div class="card text-white mb-3" style="max-width: auto; background-color : #1fb3b2 !important">\
-                            <div class="card-header"><small>Contributors</small></div>\
-                                <div class="card-body"><h5 class="card-title">'+str+'</h5>\
-                            </div></div>\
-                            <div class="card text-white mb-3" style="max-width: auto; background-color : #88b950 !important">\
-                            <div class="card-header"><small>Commits</small></div>\
-                                <div class="card-body"><h5 class="card-title">'+data.length+'</h5>\
-                            </div>';
-
-                    jQuery($("#precision")).append("<div class='jumbotron'><h2>Informations<h2><hr>\
-                    <div class='col-md-11'>"+str+"</div></div>");
+                    //Display informations
+                    display_informations(str, data);
 
                 },
                 error: function (e) {
-
+                    //Display error
                     console.log("ERROR : ", e);
                     $("#btnSubmit").prop("disabled", false);
-
                 }
             });
             
         });
-
-        /*var iptEls = document.querySelectorAll('#directory');
-        [].forEach.call(iptEls, function(iptEl) {
-                console.log(iptEl.files);
-                console.log("Searching...");
-                var data = new FormData();
-                jQuery.each(jQuery('input')[0].files, function(i, file) {
-                    data.append('file-'+i, file);
-                });
-
-                var data = new FormData();
-
-                $.each(iptEl.files,function(i,file){
-                    data.append('file', file);
-                })
-
-                $.ajax({
-                    type: "POST",
-                    enctype: 'multipart/form-data',
-                    url: 'http://localhost:8081/upload',
-                    data: data,
-                    //http://api.jquery.com/jQuery.ajax/
-                    //https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects
-                    processData: false, //prevent jQuery from automatically transforming the data into a query string
-                    contentType: false,
-                    cache: false,
-                    timeout: 600000,
-                    success: function (data) {
-
-                        $("#result").text(data);
-                        console.log("SUCCESS : ", data);
-                        $("#btnSubmit").prop("disabled", false);
-
-                    },
-                    error: function (e) {
-
-                        $("#result").text(e.responseText);
-                        console.log("ERROR : ", e);
-                        $("#btnSubmit").prop("disabled", false);
-
-                    }
-                });
-
-                
-
-        });*/
     }    
-</script>
+    </script>
     </body>
 </html>
