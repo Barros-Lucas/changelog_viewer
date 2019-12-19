@@ -77,7 +77,7 @@ public class Api {
 		    String author;
 		    String date;
 		    String message;
-		    if (git == "github")
+		    if (git.equals("github"))
 		    {
 		    	author = jsonobject.getJSONObject("commit").getJSONObject("author").getString("name");
 			    date = jsonobject.getJSONObject("commit").getJSONObject("author").getString("date");
@@ -107,7 +107,8 @@ public class Api {
 		System.out.println(url);
 		String mots[] = url.split("/");		
 		URL _url = null;
-		if (mots[2] == "github.com")
+		System.out.println(mots[2]);
+		if (mots[2].equals("github.com"))
 		{
 			_url = new URL("https://api.github.com/repos/"+mots[3]+"/"+mots[4]+"/commits");
 			return return_format (_url, "github");
