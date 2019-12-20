@@ -11,7 +11,7 @@
 This project contains many repositories :
 
 - ice/ : Back-end. Spring Boot Application. To run, open with Eclipse. Maven is used for dependency management.
-	- ice/target/ : Documentation+-
+	- ice/target/ : Documentation
 
 - front/ : Front-ent. HTML file. Contain AJAX request and form.
 
