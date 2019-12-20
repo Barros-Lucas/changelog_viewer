@@ -5,6 +5,13 @@
 1. Use `git clone https://github.com/Barros-Lucas/changelog_viewer.git` to clone project.
 2. Open with Eclipse.
 3. Wait while Maven is adding dependencies.
+4. Right click on `ice/src/main/java/m1/ice/Main.java`.
+	- `Run as > Run configurations...`
+	- To choose `Java Application` and `New Launch Application`
+	- To write `m1.ice.Main` on Main class
+	- `Apply` and `Run`
+![Run Configuration](screen/RunConfiguration.png)
+5. Open `front/index.html`
 
 **Architecure**
 
