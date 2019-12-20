@@ -10,7 +10,7 @@
 	- To choose `Java Application` and `New Launch Application`
 	- To write `m1.ice.Main` on Main class
 	- `Apply` and `Run`
-![Run Configuration](screen/RunConfiguration.png)
+![Run Configuration](screen/RunConfiguration.PNG)
 5. Open `front/index.html`
 
 **Architecure**
